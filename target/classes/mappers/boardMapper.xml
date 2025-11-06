@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mnu.mapper.BoardMapper">
+
+  <select id="getListWithPaging" resultType="org.mnu.domain.BoardVO">
+    <![CDATA[
+    SELECT bno, title, content, writer, regdate, updatedate, viewcnt
+    FROM tbl_board
+    ORDER BY bno DESC
+    OFFSET #{pageStart} ROWS FETCH NEXT #{perPageNum} ROWS ONLY
+    ]]>
+  </select>
+
+  <select id="getTotalCount" resultType="int">
+    <![CDATA[
+    SELECT count(*) FROM tbl_board WHERE bno > 0
+    ]]>
+  </select>
+
+  <insert id="insert">
+    <selectKey keyProperty="bno" order="BEFORE" resultType="long">
+      select seq_board.nextval from dual
+    </selectKey>
+    INSERT INTO tbl_board (bno, title, content, writer)
+    VALUES (#{bno}, #{title}, #{content}, #{writer})
+  </insert>
+
+  <select id="read" resultType="org.mnu.domain.BoardVO">
+    SELECT * FROM tbl_board WHERE bno = #{bno}
+  </select>
+
+  <delete id="delete">
+    DELETE FROM tbl_board WHERE bno = #{bno}
+  </delete>
+
+  <update id="update">
+    UPDATE tbl_board
+    SET title = #{title},
+        content = #{content},
+        writer = #{writer},
+        updateDate = SYSDATE
+    WHERE bno = #{bno}
+  </update>
+
+  <update id="updateViewCnt">
+    UPDATE tbl_board SET viewcnt = viewcnt + 1 WHERE bno = #{bno}
+  </update>
+
+</mapper>
