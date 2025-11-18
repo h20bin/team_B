@@ -90,7 +90,7 @@
                 <i class="fa-solid fa-arrow-right-to-bracket"></i> 로그인 하러가기
             </a>
             
-            <a href="/register" class="btn btn-join">
+            <a href="/member/register" class="btn btn-join">
                 <i class="fa-regular fa-user"></i> 회원가입
             </a>
         </div>
