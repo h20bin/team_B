@@ -23,17 +23,24 @@ public class MemberController {
     }
 
     @PostMapping("/member/register")
-    public String register(MemberVO member, RedirectAttributes rttr) {
+    public String register(MemberVO member, Model model) {
         log.info("register: " + member);
 
         // 비밀번호 검증: 8자리 이상, 특수문자 포함
         if (!member.getPassword().matches("^(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{8,}$")) {
-            rttr.addFlashAttribute("error", "비밀번호는 8자리 이상, 특수문자를 포함해야 합니다.");
-            return "redirect:/member/register";
+            model.addAttribute("error", "비밀번호는 8자리 이상, 특수문자를 포함해야 합니다.");
+            
+            // 비밀번호만 초기화
+            member.setPassword("");
+            model.addAttribute("member", member);
+
+            // redirect 없이 JSP로 forward
+            return "/member/register";
         }
 
         service.register(member);
-        rttr.addFlashAttribute("result", "회원가입 성공!");
-        return "redirect:/member/register";
+        model.addAttribute("result", "회원가입 성공!");
+        return "/member/register";
     }
+
 }

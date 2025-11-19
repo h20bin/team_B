@@ -58,17 +58,15 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
+        .success {
+            text-align: center;
+            color: green;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
         .row {
             margin-bottom: 10px;
         }
-        .success {
-		    text-align: center;
-		    color: green;
-		    margin-bottom: 10px;
-		    font-weight: bold;
-		    }
-}
-        
     </style>
 </head>
 <body>
@@ -79,28 +77,31 @@
     <c:if test="${not empty error}">
         <p class="error">${error}</p>
     </c:if>
-    
+
     <c:if test="${not empty result}">
-	    <p class="success">${result}</p>
-	</c:if>
-    
+        <p class="success">${result}</p>
+    </c:if>
 
     <form action="<c:url value='/member/register' />" method="post">
         <div class="row">
             <label>아이디</label>
-            <input type="text" name="userid" required/>
+            <input type="text" name="userid" required
+                   value="${member.userid != null ? member.userid : ''}"/>
         </div>
         <div class="row">
             <label>비밀번호</label>
-            <input type="password" name="password" required/>
+            <!-- 항상 빈칸 -->
+            <input type="password" name="password" required value=""/>
         </div>
         <div class="row">
             <label>이메일</label>
-            <input type="email" name="email" required/>
+            <input type="email" name="email" required
+                   value="${member.email != null ? member.email : ''}"/>
         </div>
         <div class="row">
             <label>이름</label>
-            <input type="text" name="name" required/>
+            <input type="text" name="name" required
+                   value="${member.name != null ? member.name : ''}"/>
         </div>
 
         <button type="submit">회원가입</button>
