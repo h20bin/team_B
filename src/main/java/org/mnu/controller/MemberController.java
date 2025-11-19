@@ -34,6 +34,6 @@ public class MemberController {
 
         service.register(member);
         rttr.addFlashAttribute("result", "회원가입 성공!");
-        return "redirect:/";
+        return "redirect:/member/register";
     }
 }

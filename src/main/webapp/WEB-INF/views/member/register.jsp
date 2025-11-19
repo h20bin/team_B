@@ -61,6 +61,14 @@
         .row {
             margin-bottom: 10px;
         }
+        .success {
+		    text-align: center;
+		    color: green;
+		    margin-bottom: 10px;
+		    font-weight: bold;
+		    }
+}
+        
     </style>
 </head>
 <body>
@@ -71,6 +79,11 @@
     <c:if test="${not empty error}">
         <p class="error">${error}</p>
     </c:if>
+    
+    <c:if test="${not empty result}">
+	    <p class="success">${result}</p>
+	</c:if>
+    
 
     <form action="<c:url value='/member/register' />" method="post">
         <div class="row">

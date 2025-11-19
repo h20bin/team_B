@@ -84,7 +84,8 @@
     </header>
 
     <div class="main">
-        <h1>간편하게 예약하고 하루를 시작하세요</h1>
+        <h1>간편하게 예약하고</h1>
+        <h1>하루를 시작하세요</h1>
         <div class="btn-group">
             <a href="/board/list" class="btn btn-login">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i> 로그인 하러가기
