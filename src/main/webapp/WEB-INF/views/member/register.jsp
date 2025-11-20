@@ -92,6 +92,12 @@
 
         <button type="submit">회원가입</button>
     </form>
+    
+    <c:if test="${not empty error}">
+    <script>
+        alert("${error}");
+    </script>
+</c:if>
 </div>
 
 </body>

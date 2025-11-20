@@ -18,4 +18,11 @@ public class MemberServiceImpl implements MemberService {
         log.info("register member: " + member);
         mapper.insert(member);
     }
+
+    @Override
+    public MemberVO login(MemberVO member) {
+        log.info("login service run......" + member);
+        
+        return mapper.login(member); 
+    }
 }
