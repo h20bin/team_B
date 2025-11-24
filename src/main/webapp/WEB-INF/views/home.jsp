@@ -1,5 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -33,7 +33,9 @@
             letter-spacing: -1px;
         }
         
-        /* 서브 텍스트 스타일 삭제됨 */
+        /* 로그인 후 환영 문구 스타일 */
+        .welcome-text { font-size: 24px; margin-bottom: 10px; color: #495057; font-weight: 600; }
+        .user-name { color: #339af0; font-weight: 800; }
 
         /* 4. 버튼 디자인 */
         .btn-group {
@@ -50,23 +52,23 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
 
-        /* 로그인 버튼 */
-        .btn-login {
+        /* 주요 버튼 (로그인/입장) */
+        .btn-primary {
             background: linear-gradient(135deg, #339af0 0%, #228be6 100%); 
             color: white; border: none;
         }
-        .btn-login:hover {
+        .btn-primary:hover {
             transform: translateY(-3px); 
             box-shadow: 0 8px 15px rgba(34, 139, 230, 0.3); 
         }
 
-        /* 회원가입 버튼 */
-        .btn-join {
+        /* 보조 버튼 (회원가입/로그아웃) */
+        .btn-secondary {
             background-color: #fff;
             color: #495057;
             border: 2px solid #f1f3f5;
         }
-        .btn-join:hover {
+        .btn-secondary:hover {
             background-color: #f8f9fa;
             border-color: #dee2e6;
             transform: translateY(-3px);
@@ -84,17 +86,41 @@
     </header>
 
     <div class="main">
-        <h1>간편하게 예약하고</h1>
-        <h1>하루를 시작하세요</h1>
-        <div class="btn-group">
-            <a href="/board/list" class="btn btn-login">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> 로그인 하러가기
-            </a>
+        
+        <c:choose>
             
-            <a href="/member/register" class="btn btn-join">
-                <i class="fa-regular fa-user"></i> 회원가입
-            </a>
-        </div>
+            <%-- 1. 로그인이 안 된 상태 (loginUser 세션이 비어있음) --%>
+            <c:when test="${empty loginUser}">
+                <h1>간편하게 예약하고<br>하루를 시작하세요</h1>
+                <div class="btn-group">
+                    <a href="/member/login" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> 로그인 하러가기
+                    </a>
+                    
+                    <a href="/member/register" class="btn btn-secondary">
+                        <i class="fa-regular fa-user"></i> 회원가입
+                    </a>
+                </div>
+            </c:when>
+
+            <%-- 2. 로그인 된 상태 (loginUser 세션이 존재함) --%>
+            <c:otherwise>
+                <p class="welcome-text">반갑습니다, <span class="user-name">${loginUser.name}</span>님!</p>
+                <h1>오늘도 힘내세요!</h1>
+                
+                <div class="btn-group">
+                    <a href="/board/list" class="btn btn-primary">
+                        <i class="fa-solid fa-list-check"></i> 시설 조회하러 가기
+                    </a>
+                    
+                    <a href="/member/logout" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃
+                    </a>
+                </div>
+            </c:otherwise>
+            
+        </c:choose>
+
     </div>
 </body>
 </html>

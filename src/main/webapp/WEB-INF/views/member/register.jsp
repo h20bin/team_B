@@ -110,3 +110,8 @@
 
 </body>
 </html>
+<c:if test="${not empty error}">
+    <script>
+        alert("${error}");
+    </script>
+</c:if>

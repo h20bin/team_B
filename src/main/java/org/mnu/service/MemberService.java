@@ -4,4 +4,6 @@ import org.mnu.domain.MemberVO;
 
 public interface MemberService {
     void register(MemberVO member);
+
+	MemberVO login(MemberVO member);
 }
