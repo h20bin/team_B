@@ -124,17 +124,20 @@
             </a>
 
             <div class="btn-right">
-                <a href="/board/modify?bno=<c:out value='${board.bno}'/>&page=<c:out value='${cri.page}'/>&perPageNum=<c:out value='${cri.perPageNum}'/>" class="btn btn-modify">
-                    <i class="fa-solid fa-pen-to-square"></i> 수정
-                </a>
-                
-                <button id="removeBtn" class="btn btn-remove">
-                    <i class="fa-solid fa-trash"></i> 삭제
-                </button>
+				<c:if test="${loginUser.userid == board.writer}">
+					<a href="/board/modify?bno=<c:out value='${board.bno}'/>&page=<c:out value='${cri.page}'/>&perPageNum=<c:out value='${cri.perPageNum}'/>" class="btn btn-modify">
+						<i class="fa-solid fa-pen-to-square"></i> 수정
+					</a>
+					
+					<button id="removeBtn" class="btn btn-remove">
+						<i class="fa-solid fa-trash"></i> 삭제
+					</button>
+				</c:if>
             </div>
         </div>
 
         <form id="removeForm" action="/board/remove" method="post">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <input type="hidden" name="bno" value="<c:out value='${board.bno}'/>">
             <input type="hidden" name="page" value="<c:out value='${cri.page}'/>">
             <input type="hidden" name="perPageNum" value="<c:out value='${cri.perPageNum}'/>">

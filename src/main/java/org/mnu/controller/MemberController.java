@@ -47,7 +47,7 @@ public class MemberController {
             return "redirect:/member/register";
         } catch (Exception e) {
             // 그 외 알 수 없는 오류
-            log.info("회원가입 에러 발생");
+            log.error("회원가입 에러 발생", e);
             rttr.addFlashAttribute("error", "회원가입 중 문제가 발생했습니다.");
             return "redirect:/member/register";
         }

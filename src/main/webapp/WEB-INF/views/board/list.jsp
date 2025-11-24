@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -86,6 +87,31 @@
             transition: 0.2s;
         }
         .btn-write:hover { background-color: #228be6; }
+        
+        /* 사용자 정보 패널 */
+        .user-panel {
+        	display: flex;
+        	justify-content: flex-end;
+        	align-items: center;
+        	gap: 15px;
+        	margin-bottom: 25px;
+        	padding: 15px;
+        	background-color: #f8f9fa;
+        	border-radius: 8px;
+        }
+        .user-panel .user-info { font-size: 15px; font-weight: 700; color: #495057; }
+        .user-panel .user-info .user-name { color: #339af0; }
+        
+        .user-panel .btn {
+        	padding: 8px 15px;
+        	font-size: 14px;
+        	border-radius: 6px;
+        	border: 1px solid #dee2e6;
+        	background-color: #fff;
+        }
+        .user-panel .btn-admin { border-color: #be4bdb; color: #be4bdb; }
+        .user-panel .btn-logout { border-color: #fa5252; color: #fa5252; }
+
 
     </style>
 </head>
@@ -93,12 +119,32 @@
 
     <header>
         <div class="logo">
-            <i class="fa-solid fa-dumbbell"></i> 체육시설 조회
+            <a href="/" style="display: flex; align-items: center;"><i class="fa-solid fa-dumbbell"></i> 체육시설 조회</a>
         </div>
     </header>
 
     <div class="main-container">
-        <h1>이용 후기 게시판</h1> <table class="board-table">
+    
+    	<!-- 사용자 정보 패널 -->
+    	<div class="user-panel">
+    		<c:choose>
+    			<c:when test="${empty loginUser}">
+    				<div class="user-info">로그인하고 더 많은 기능을 이용해보세요.</div>
+    				<a href="/member/login" class="btn">로그인</a>
+    				<a href="/member/register" class="btn">회원가입</a>
+    			</c:when>
+    			<c:otherwise>
+    				<div class="user-info"><span class="user-name">${loginUser.name}</span>님, 환영합니다!</div>
+    				<sec:authorize access="hasRole('ADMIN')">
+    					<a href="/admin/main" class="btn btn-admin">관리자 페이지</a>
+    				</sec:authorize>
+    				<a href="/member/logout" class="btn btn-logout">로그아웃</a>
+    			</c:otherwise>
+    		</c:choose>
+    	</div>
+    
+        <h1>이용 후기 게시판</h1> 
+        <table class="board-table">
             <colgroup>
                 <col style="width: 10%;">
                 <col style="width: 50%;">
@@ -146,9 +192,6 @@
             </c:if>
         </div>
 
-        <div class="btn-wrap">
-            <a href="/board/register" class="btn-write"><i class="fa-solid fa-pen"></i> 게시글 작성</a>
-        </div>
     </div>
 
     <script>

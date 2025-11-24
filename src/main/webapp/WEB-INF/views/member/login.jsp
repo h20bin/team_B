@@ -82,8 +82,8 @@
     <div class="main">
         <h2>로그인</h2>
         
-        <form action="/member/login" method="post" class="login-form">
-            
+        <form action="/login" method="post" class="login-form">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <div class="input-group">
                 <i class="fa-regular fa-user"></i>
                 <input type="text" name="userid" placeholder="아이디를 입력하세요" required autofocus>

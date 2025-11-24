@@ -108,15 +108,11 @@
         <h1>게시글 작성</h1>
 
         <form action="/board/register" method="post">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             
             <div class="form-group">
                 <label class="form-label"><i class="fa-solid fa-heading"></i> 제목</label>
                 <input type="text" name="title" class="form-input" placeholder="제목을 입력해주세요">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label"><i class="fa-solid fa-user"></i> 작성자</label>
-                <input type="text" name="writer" class="form-input" placeholder="작성자 이름을 입력해주세요">
             </div>
 
             <div class="form-group">

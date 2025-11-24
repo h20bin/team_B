@@ -1,15 +1,17 @@
 package org.mnu.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.List;
 
-@Getter
-@Setter
-@ToString
+import lombok.Data;
+
+@Data
 public class MemberVO {
-    private String userid;
-    private String password;
-    private String email;
-    private String name;
+	
+	private String userid;
+	private String password;
+	private String email;
+	private String name;
+	
+	private List<AuthVO> authList;
+
 }

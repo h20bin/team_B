@@ -83,6 +83,7 @@
     </c:if>
 
     <form action="<c:url value='/member/register' />" method="post">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <div class="row">
             <label>아이디</label>
             <input type="text" name="userid" required

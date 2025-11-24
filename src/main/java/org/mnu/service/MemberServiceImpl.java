@@ -1,27 +1,45 @@
 package org.mnu.service;
 
+import org.mnu.domain.AuthVO;
 import org.mnu.domain.MemberVO;
 import org.mnu.mapper.MemberMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.Setter;
 
 @Service
-@AllArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
+    @Setter(onMethod_ = @Autowired)
     private MemberMapper mapper;
 
-    @Override
-    public void register(MemberVO member) {
+    @Setter(onMethod_ = @Autowired)
+    private PasswordEncoder passwordEncoder;
+
+    	@Transactional
+
+    	@Override
+
+    	public void register(MemberVO member) {        // 비밀번호 암호화
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        
+        // 회원 정보 저장
         mapper.insert(member);
+        
+        // 기본 권한 생성 및 저장
+        AuthVO auth = new AuthVO();
+        auth.setUserid(member.getUserid());
+        auth.setAuth("ROLE_USER");
+        
+        mapper.insertAuth(auth);
     }
 
-    // ★★★ 여기가 비어있거나 return null; 로 되어 있으면 로그인이 안 됩니다!
     @Override
     public MemberVO login(MemberVO member) {
-        System.out.println("서비스 로그인 호출됨: " + member.getUserid()); // 디버깅용 로그
-        
-        // 매퍼에게 일 시키기
-        return mapper.login(member);
+        // Spring Security로 대체될 예정이므로 지금은 중요하지 않음
+        return null;
     }
 }

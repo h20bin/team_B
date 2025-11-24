@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mnu.mapper.MemberMapper">
+
+	<resultMap type="org.mnu.domain.MemberVO" id="memberMap">
+		<id property="userid" column="userid"/>
+		<result property="password" column="password"/>
+		<result property="email" column="email"/>
+		<result property="name" column="name"/>
+		<collection property="authList" resultMap="authMap">
+		</collection>
+	</resultMap>
+	
+	<resultMap type="org.mnu.domain.AuthVO" id="authMap">
+		<result property="userid" column="userid"/>
+		<result property="auth" column="auth"/>
+	</resultMap>
+	
+	<select id="read" resultMap="memberMap">
+	SELECT
+	    m.userid, m.password, m.email, m.name, a.auth
+	FROM
+	    member m LEFT OUTER JOIN member_auth a ON m.userid = a.userid
+	WHERE
+	    m.userid = #{userid}
+	</select>
+	
+	<insert id="insert">
+		insert into member(userid, password, email, name) 
+		values (#{userid}, #{password}, #{email}, #{name})
+	</insert>
+	
+	<insert id="insertAuth">
+		insert into member_auth (userid, auth) 
+		values (#{userid}, #{auth})
+	</insert>
+
+</mapper>

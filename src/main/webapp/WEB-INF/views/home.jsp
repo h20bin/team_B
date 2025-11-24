@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -73,8 +74,47 @@
             border-color: #dee2e6;
             transform: translateY(-3px);
         }
+        
+        /* 관리자 버튼 (보라색) */
+        .btn-admin {
+            background-color: #7950f2;
+            color: white;
+            border: none;
+        }
+        .btn-admin:hover {
+        	background-color: #6741d9;
+        	transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(121, 80, 242, 0.3);
+        }
 
         .btn i { font-size: 18px; }
+
+        /* 결과 메시지 박스 (성공) */
+        .result-box {
+            position: fixed;
+            top: 80px; /* 헤더 아래 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: 90%;
+            padding: 12px 25px;
+            border-radius: 10px;
+            background-color: #28a745; /* 초록색 배경 */
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            z-index: 200;
+            opacity: 0;
+            animation: fade-in-out 4s ease-in-out forwards;
+        }
+
+        @keyframes fade-in-out {
+            0% { opacity: 0; top: 60px; }
+            20% { opacity: 1; top: 80px; }
+            80% { opacity: 1; top: 80px; }
+            100% { opacity: 0; top: 60px; }
+        }
 
     </style>
 </head>
@@ -84,6 +124,10 @@
             <i class="fa-solid fa-dumbbell"></i> 체육시설 조회
         </div>
     </header>
+    
+    <c:if test="${not empty result}">
+        <div class="result-box">${result}</div>
+    </c:if>
 
     <div class="main">
         
@@ -112,6 +156,12 @@
                     <a href="/board/list" class="btn btn-primary">
                         <i class="fa-solid fa-list-check"></i> 시설 조회하러 가기
                     </a>
+                    
+                    <sec:authorize access="hasRole('ADMIN')">
+	                    <a href="/admin/main" class="btn btn-admin">
+	                        <i class="fa-solid fa-user-shield"></i> 관리자 페이지
+	                    </a>
+                    </sec:authorize>
                     
                     <a href="/member/logout" class="btn btn-secondary">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃
