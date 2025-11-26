@@ -1,6 +1,5 @@
 package org.mnu.service;
 
-import org.mnu.domain.AuthVO;
 import org.mnu.domain.MemberVO;
 import org.mnu.mapper.MemberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +18,17 @@ public class MemberServiceImpl implements MemberService {
     @Setter(onMethod_ = @Autowired)
     private PasswordEncoder passwordEncoder;
 
-    	@Transactional
-
-    	@Override
-
-    	public void register(MemberVO member) {        // 비밀번호 암호화
+    @Transactional
+    @Override
+    public void register(MemberVO member) {
+        // 비밀번호 암호화
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         
-        // 회원 정보 저장
+        // 기본 권한 설정
+        member.setAuth("ROLE_USER");
+        
+        // 회원 정보 저장 (권한 포함)
         mapper.insert(member);
-        
-        // 기본 권한 생성 및 저장
-        AuthVO auth = new AuthVO();
-        auth.setUserid(member.getUserid());
-        auth.setAuth("ROLE_USER");
-        
-        mapper.insertAuth(auth);
     }
 
     @Override

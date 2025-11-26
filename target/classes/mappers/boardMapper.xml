@@ -4,9 +4,22 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.mnu.mapper.BoardMapper">
 
-  <select id="getListWithPaging" resultType="org.mnu.domain.BoardVO">
+  <resultMap type="org.mnu.domain.BoardVO" id="BoardMap">
+    <id property="bno" column="bno"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="writer" column="writer"/>
+    <result property="regdate" column="regdate"/>
+    <result property="updateDate" column="updateDate"/>
+    <result property="viewcnt" column="viewcnt"/>
+    <result property="location" column="location"/>
+    <result property="reviewCnt" column="review_cnt"/>
+    <result property="ratingAvg" column="rating_avg"/>
+  </resultMap>
+
+  <select id="getListWithPaging" resultMap="BoardMap">
     <![CDATA[
-    SELECT bno, title, content, writer, regdate, updatedate, viewcnt
+    SELECT bno, title, content, writer, regdate, updatedate, viewcnt, location, review_cnt, rating_avg
     FROM tbl_board
     ORDER BY bno DESC
     OFFSET #{pageStart} ROWS FETCH NEXT #{perPageNum} ROWS ONLY
@@ -23,11 +36,11 @@
     <selectKey keyProperty="bno" order="BEFORE" resultType="long">
       select seq_board.nextval from dual
     </selectKey>
-    INSERT INTO tbl_board (bno, title, content, writer)
-    VALUES (#{bno}, #{title}, #{content}, #{writer})
+    INSERT INTO tbl_board (bno, title, content, writer, location, regdate, updatedate)
+    VALUES (#{bno}, #{title}, #{content}, #{writer}, #{location}, sysdate, sysdate)
   </insert>
 
-  <select id="read" resultType="org.mnu.domain.BoardVO">
+  <select id="read" resultMap="BoardMap">
     SELECT * FROM tbl_board WHERE bno = #{bno}
   </select>
 
@@ -39,13 +52,32 @@
     UPDATE tbl_board
     SET title = #{title},
         content = #{content},
+        location = #{location},
         writer = #{writer},
         updateDate = SYSDATE
     WHERE bno = #{bno}
   </update>
 
-  <update id="updateViewCnt">
-    UPDATE tbl_board SET viewcnt = viewcnt + 1 WHERE bno = #{bno}
-  </update>
+    <update id="updateViewCnt">
 
-</mapper>
+      UPDATE tbl_board SET viewcnt = viewcnt + 1 WHERE bno = #{bno}
+
+    </update>
+
+    
+
+    <update id="updateReviewStats">
+
+      UPDATE tbl_board b SET
+
+          review_cnt = (SELECT COUNT(rno) FROM tbl_review WHERE bno = b.bno),
+
+          rating_avg = (SELECT COALESCE(AVG(rating), 0) FROM tbl_review WHERE bno = b.bno)
+
+      WHERE b.bno = #{bno}
+
+    </update>
+
+    
+
+  </mapper>

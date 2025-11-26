@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mnu.mapper.AttachMapper">
+
+  <insert id="insert">
+    insert into tbl_attach (uuid, upload_path, file_name, file_type, bno) 
+    values (#{uuid}, #{uploadPath}, #{fileName}, #{fileType}, #{bno})
+  </insert>
+  
+  <delete id="deleteAll">
+    delete from tbl_attach where bno = #{bno}
+  </delete>
+  
+  <select id="findByBno" resultType="org.mnu.domain.AttachVO">
+    SELECT 
+        uuid, 
+        upload_path AS uploadPath, 
+        file_name AS fileName, 
+        file_type AS fileType, 
+        bno 
+    FROM tbl_attach 
+    WHERE bno = #{bno}
+  </select>
+
+</mapper>

@@ -9,32 +9,16 @@
 		<result property="password" column="password"/>
 		<result property="email" column="email"/>
 		<result property="name" column="name"/>
-		<collection property="authList" resultMap="authMap">
-		</collection>
-	</resultMap>
-	
-	<resultMap type="org.mnu.domain.AuthVO" id="authMap">
-		<result property="userid" column="userid"/>
 		<result property="auth" column="auth"/>
 	</resultMap>
 	
 	<select id="read" resultMap="memberMap">
-	SELECT
-	    m.userid, m.password, m.email, m.name, a.auth
-	FROM
-	    member m LEFT OUTER JOIN member_auth a ON m.userid = a.userid
-	WHERE
-	    m.userid = #{userid}
+		SELECT * FROM member WHERE userid = #{userid}
 	</select>
 	
 	<insert id="insert">
-		insert into member(userid, password, email, name) 
-		values (#{userid}, #{password}, #{email}, #{name})
-	</insert>
-	
-	<insert id="insertAuth">
-		insert into member_auth (userid, auth) 
-		values (#{userid}, #{auth})
+		insert into member(userid, password, email, name, auth) 
+		values (#{userid}, #{password}, #{email}, #{name}, #{auth})
 	</insert>
 
 </mapper>

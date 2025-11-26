@@ -29,6 +29,21 @@
         .main { margin-top: 160px; text-align: center; width: 100%; max-width: 400px; padding: 20px; }
         
         h2 { font-size: 32px; margin-bottom: 40px; font-weight: 800; color: #212529; }
+
+        /* 에러 메시지 스타일 */
+        .error-message {
+            background-color: #fff5f5;
+            color: #fa5252;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
         
         .login-form { display: flex; flex-direction: column; gap: 15px; width: 100%; }
         
@@ -61,6 +76,22 @@
         }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34, 139, 230, 0.3); }
         
+        /* 자동 로그인 체크박스 그룹 */
+        .checkbox-group {
+        	display: flex;
+        	justify-content: flex-start;
+        	align-items: center;
+        	margin-top: -5px; /* input-group gap 보정 */
+        	font-size: 14px;
+        	color: #495057;
+        }
+        .checkbox-group input[type="checkbox"] {
+        	width: 16px;
+        	height: 16px;
+        	margin-right: 8px;
+        	accent-color: #339af0; /* 체크박스 색상 변경 */
+        }
+        
         .links { margin-top: 20px; font-size: 14px; color: #868e96; display: flex; gap: 15px; justify-content: center; }
         .links a:hover { text-decoration: underline; color: #339af0; }
     </style>
@@ -81,6 +112,13 @@
 
     <div class="main">
         <h2>로그인</h2>
+
+        <c:if test="${param.error != null}">
+            <div class="error-message">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                아이디 또는 비밀번호가 일치하지 않습니다.
+            </div>
+        </c:if>
         
         <form action="/login" method="post" class="login-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -92,6 +130,11 @@
             <div class="input-group">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" name="password" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            
+            <div class="checkbox-group">
+            	<input type="checkbox" name="remember-me" id="remember-me">
+            	<label for="remember-me">자동 로그인</label>
             </div>
 
             <button type="submit" class="btn-login">로그인</button>

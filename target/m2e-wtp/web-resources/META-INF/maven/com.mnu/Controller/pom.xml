@@ -12,11 +12,13 @@
       <repository>
            <id>central</id>
            <name>Maven Central Repository</name>
-           <url>https://repo1.maven.org/maven2</url> </repository>
+           <url>https://repo1.maven.org/maven2</url> 
+       </repository>
        <repository>
             <id>oracle</id>
             <name>ORACLE JDBC Repository</name>
-            <url>http://maven.jahia.org/maven2</url> </repository>
+            <url>http://maven.jahia.org/maven2</url> 
+       </repository>
     </repositories>
    
    <properties>
@@ -25,68 +27,74 @@
       <org.springframework.security-version>5.8.12</org.springframework.security-version>
       <org.aspectj-version>1.6.10</org.aspectj-version>
       <org.slf4j-version>1.6.6</org.slf4j-version>
-    </properties>
+   </properties>
    
    <dependencies>
-      <!-- Spring -->
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-context</artifactId>
          <version>${org.springframework-version}</version>
          <exclusions>
-            <!-- Exclude Commons Logging in favor of SLF4j -->
             <exclusion>
                <groupId>commons-logging</groupId>
                <artifactId>commons-logging</artifactId>
              </exclusion>
-         </exclusions> </dependency>
+         </exclusions> 
+      </dependency>
       <dependency>
          <groupId>org.springframework</groupId>
          <artifactId>spring-webmvc</artifactId>
-         <version>${org.springframework-version}</version> </dependency>
+         <version>${org.springframework-version}</version> 
+      </dependency>
       <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-jdbc</artifactId>
-           <version>${org.springframework-version}</version> </dependency>
+           <version>${org.springframework-version}</version> 
+      </dependency>
        <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-tx</artifactId>
-           <version>${org.springframework-version}</version> </dependency>
+           <version>${org.springframework-version}</version> 
+       </dependency>
        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${org.springframework-version}</version> </dependency>
+            <version>${org.springframework-version}</version> 
+       </dependency>
          
-         <!-- Security -->
          <dependency>
           <groupId>org.springframework.security</groupId>
           <artifactId>spring-security-web</artifactId>
-          <version>${org.springframework.security-version}</version> </dependency>
+          <version>${org.springframework.security-version}</version> 
+         </dependency>
       <dependency>
           <groupId>org.springframework.security</groupId>
           <artifactId>spring-security-config</artifactId>
-          <version>${org.springframework.security-version}</version> </dependency>
+          <version>${org.springframework.security-version}</version> 
+      </dependency>
       <dependency>
           <groupId>org.springframework.security</groupId>
           <artifactId>spring-security-taglibs</artifactId>
-          <version>${org.springframework.security-version}</version> </dependency>
+          <version>${org.springframework.security-version}</version> 
+      </dependency>
       
-      <!-- Validation -->
       <dependency>
           <groupId>javax.validation</groupId>
           <artifactId>validation-api</artifactId>
-          <version>1.1.0.Final</version> </dependency>
+          <version>1.1.0.Final</version> 
+      </dependency>
       <dependency>
-          <groupId>org.hibernate</groupId> <artifactId>hibernate-validator</artifactId>
-          <version>5.4.3.Final</version> </dependency>
+          <groupId>org.hibernate</groupId> 
+          <artifactId>hibernate-validator</artifactId>
+          <version>5.4.3.Final</version> 
+      </dependency>
             
-      <!-- AspectJ -->
       <dependency>
          <groupId>org.aspectj</groupId>
          <artifactId>aspectjrt</artifactId>
-         <version>${org.aspectj-version}</version> </dependency>   
+         <version>${org.aspectj-version}</version> 
+      </dependency>   
       
-      <!-- Logging -->
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-api</artifactId>
@@ -119,63 +127,94 @@
          <version>1.16</version> 
       </dependency>
 
-      <!-- @Inject -->
       <dependency>
          <groupId>javax.inject</groupId>
          <artifactId>javax.inject</artifactId>
-         <version>1</version> </dependency>
+         <version>1</version> 
+      </dependency>
             
-      <!-- Servlet -->
       <dependency>
          <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
-         <scope>provided</scope> </dependency>
+         <scope>provided</scope> 
+      </dependency>
       <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.1</version>
-            <scope>provided</scope> </dependency>
+            <scope>provided</scope> 
+      </dependency>
          <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
-            <version>1.2</version> </dependency>
+            <version>1.2</version> 
+         </dependency>
    
-      <!-- Test -->
       <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
          <version>4.12</version>
-         <scope>test</scope> </dependency>        
+         <scope>test</scope> 
+      </dependency>         
       
-      <!-- HikariCP -->
       <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.9</version> </dependency>
+            <version>2.7.9</version> 
+      </dependency>
          
-         <!-- MyBatis -->
          <dependency>
          <groupId>org.mybatis</groupId>
          <artifactId>mybatis</artifactId>
-         <version>3.5.10</version> </dependency>
+         <version>3.5.10</version> 
+         </dependency>
       <dependency>
          <groupId>org.mybatis</groupId>
          <artifactId>mybatis-spring</artifactId>
-         <version>2.0.7</version> </dependency>
+         <version>2.0.7</version> 
+      </dependency>
       
-      <!-- Oracle -->
       <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-            <version>21.7.0.0</version> </dependency>
+            <version>21.7.0.0</version> 
+      </dependency>
       
-      <!-- Lombok -->
       <dependency>
          <groupId>org.projectlombok</groupId>
          <artifactId>lombok</artifactId>
          <version>1.18.40</version>
-         <scope>provided</scope> </dependency>
+         <scope>provided</scope> 
+      </dependency>
+      
+      <dependency>
+          <groupId>net.coobird</groupId>
+          <artifactId>thumbnailator</artifactId>
+          <version>0.4.21</version>
+      </dependency>
+      
+      <dependency>
+          <groupId>commons-fileupload</groupId>
+          <artifactId>commons-fileupload</artifactId>
+          <version>1.4</version>
+      </dependency>
+      <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <version>2.11.0</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+          <version>2.14.2</version>
+      </dependency>
+      <dependency>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+          <artifactId>jackson-dataformat-xml</artifactId>
+          <version>2.14.2</version>
+      </dependency>
       
    </dependencies>
    
@@ -194,7 +233,8 @@
                     </additionalBuildcommands>
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>true</downloadJavadocs>
-                </configuration> </plugin>
+                </configuration> 
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -205,18 +245,21 @@
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
-                </configuration> </plugin>
+                </configuration> 
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
                     <mainClass>org.test.int1.Main</mainClass>
-                </configuration> </plugin>
+                </configuration> 
+            </plugin>
             <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
-            <version>3.3.2</version> </plugin>
+            <version>3.3.2</version> 
+            </plugin>
             
         </plugins>
     </build>

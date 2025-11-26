@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mnu.mapper.ReviewMapper">
+
+    <insert id="insert">
+        <selectKey keyProperty="rno" order="BEFORE" resultType="long">
+            SELECT seq_review.nextval FROM dual
+        </selectKey>
+        INSERT INTO tbl_review (rno, bno, userid, rating, content)
+        VALUES (#{rno}, #{bno}, #{userid}, #{rating}, #{content})
+    </insert>
+    
+    <select id="read" resultType="org.mnu.domain.ReviewVO">
+        SELECT * FROM tbl_review WHERE rno = #{rno}
+    </select>
+    
+    <delete id="delete">
+        DELETE FROM tbl_review WHERE rno = #{rno}
+    </delete>
+    
+    <update id="update">
+        UPDATE tbl_review SET
+        content = #{content},
+        rating = #{rating},
+        updatedate = SYSDATE
+        WHERE rno = #{rno}
+    </update>
+    
+    <select id="getListWithPaging" resultType="org.mnu.domain.ReviewVO">
+        <![CDATA[
+        SELECT rno, bno, userid, rating, content, regdate, updatedate
+        FROM tbl_review
+        WHERE bno = #{bno}
+        ORDER BY rno DESC
+        OFFSET #{cri.pageStart} ROWS FETCH NEXT #{cri.perPageNum} ROWS ONLY
+        ]]>
+    </select>
+    
+    <select id="getCountByBno" resultType="int">
+        SELECT count(rno) FROM tbl_review WHERE bno = #{bno}
+    </select>
+    
+    <select id="getRatingDistribution" resultType="map">
+        SELECT rating, COUNT(rno) as cnt
+        FROM tbl_review
+        WHERE bno = #{bno}
+        GROUP BY rating
+        ORDER BY rating DESC
+    </select>
+
+</mapper>

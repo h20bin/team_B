@@ -134,8 +134,11 @@
     				<a href="/member/register" class="btn">회원가입</a>
     			</c:when>
     			<c:otherwise>
-    				<div class="user-info"><span class="user-name">${loginUser.name}</span>님, 환영합니다!</div>
-    				<sec:authorize access="hasRole('ADMIN')">
+    				    					<div class="user-info">
+    				    						<span class="user-name">${loginUser.name}</span>님, 환영합니다!
+    				    						<br>
+    				    						<small>보유 권한: ${loginUser.auth}</small>
+    				    					</div>    				<sec:authorize access="hasRole('ADMIN')">
     					<a href="/admin/main" class="btn btn-admin">관리자 페이지</a>
     				</sec:authorize>
     				<a href="/member/logout" class="btn btn-logout">로그아웃</a>

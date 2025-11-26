@@ -1,17 +1,18 @@
 package org.mnu.domain;
 
-import java.util.List;
-
+import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class MemberVO {
+public class MemberVO implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private String userid;
 	private String password;
 	private String email;
 	private String name;
 	
-	private List<AuthVO> authList;
+	private String auth;
 
 }

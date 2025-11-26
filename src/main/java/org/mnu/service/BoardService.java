@@ -1,6 +1,7 @@
 package org.mnu.service;
 
 import java.util.List;
+import org.mnu.domain.AttachVO;
 import org.mnu.domain.BoardVO;
 import org.mnu.domain.Criteria;
 
@@ -11,5 +12,7 @@ public interface BoardService {
 	public boolean modify(BoardVO board);
 	public boolean remove(Long bno);
 	public List<BoardVO> getList(Criteria cri);
-	public int getTotal();	
+	public int getTotal();
+	
+	public List<AttachVO> getAttachList(Long bno);
 }
