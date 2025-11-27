@@ -13,14 +13,54 @@
     <result property="updateDate" column="updateDate"/>
     <result property="viewcnt" column="viewcnt"/>
     <result property="location" column="location"/>
+    <result property="category" column="category"/> <!-- 추가됨 -->
     <result property="reviewCnt" column="review_cnt"/>
     <result property="ratingAvg" column="rating_avg"/>
   </resultMap>
 
+  <sql id="criteria">
+    <trim prefix="AND (" suffix=")" prefixOverrides="OR">
+      <foreach item="type" collection="typeArr">
+        <trim prefix="OR">
+          <choose>
+            <when test="type == 'T'.toString()">
+              title LIKE '%'||#{keyword}||'%'
+            </when>
+            <when test="type == 'C'.toString()">
+              content LIKE '%'||#{keyword}||'%'
+            </when>
+            <when test="type == 'W'.toString()">
+              writer LIKE '%'||#{keyword}||'%'
+            </when>
+          </choose>
+        </trim>
+      </foreach>
+    </trim>
+    
+    <!-- 카테고리 필터 -->
+    <if test="category != null and category != ''">
+        AND category = #{category}
+    </if>
+    
+    <!-- 지역 필터 (시/도) - 주소 앞부분 매칭 -->
+    <if test="sido != null and sido != ''">
+        AND location LIKE '%' || #{sido} || '%'
+    </if>
+    
+    <!-- 지역 필터 (구/군) - 주소 중간 매칭 -->
+    <if test="gugun != null and gugun != ''">
+        AND location LIKE '%' || #{gugun} || '%'
+    </if>
+  </sql>
+
   <select id="getListWithPaging" resultMap="BoardMap">
     <![CDATA[
-    SELECT bno, title, content, writer, regdate, updatedate, viewcnt, location, review_cnt, rating_avg
+    SELECT bno, title, content, writer, regdate, updatedate, viewcnt, location, category, review_cnt, rating_avg
     FROM tbl_board
+    WHERE bno > 0
+    ]]>
+    <include refid="criteria"></include>
+    <![CDATA[
     ORDER BY bno DESC
     OFFSET #{pageStart} ROWS FETCH NEXT #{perPageNum} ROWS ONLY
     ]]>
@@ -30,14 +70,15 @@
     <![CDATA[
     SELECT count(*) FROM tbl_board WHERE bno > 0
     ]]>
+    <include refid="criteria"></include>
   </select>
 
   <insert id="insert">
     <selectKey keyProperty="bno" order="BEFORE" resultType="long">
       select seq_board.nextval from dual
     </selectKey>
-    INSERT INTO tbl_board (bno, title, content, writer, location, regdate, updatedate)
-    VALUES (#{bno}, #{title}, #{content}, #{writer}, #{location}, sysdate, sysdate)
+    INSERT INTO tbl_board (bno, title, content, writer, location, category, regdate, updatedate)
+    VALUES (#{bno}, #{title}, #{content}, #{writer}, #{location}, #{category}, sysdate, sysdate)
   </insert>
 
   <select id="read" resultMap="BoardMap">
@@ -53,6 +94,7 @@
     SET title = #{title},
         content = #{content},
         location = #{location},
+        category = #{category},
         writer = #{writer},
         updateDate = SYSDATE
     WHERE bno = #{bno}
@@ -78,6 +120,22 @@
 
     </update>
 
-    
+  <select id="getListByWriter" resultMap="BoardMap">
+    <![CDATA[
+    SELECT bno, title, content, writer, regdate, updatedate, viewcnt, location, review_cnt, rating_avg
+    FROM tbl_board
+    WHERE writer = #{writer}
+    ORDER BY bno DESC
+    OFFSET #{cri.pageStart} ROWS FETCH NEXT #{cri.perPageNum} ROWS ONLY
+    ]]>
+  </select>
+
+  <select id="getTotalCountByWriter" resultType="int">
+    SELECT count(*) FROM tbl_board WHERE writer = #{writer} AND bno > 0
+  </select>
+  
+  <select id="getLocations" resultType="string">
+    SELECT DISTINCT location FROM tbl_board WHERE location IS NOT NULL ORDER BY location
+  </select>
 
   </mapper>

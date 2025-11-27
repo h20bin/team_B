@@ -66,8 +66,10 @@ public class BoardController {
     public void list(Criteria cri, Model model) {
         log.info("list: " + cri);
         model.addAttribute("list", service.getList(cri));
-        model.addAttribute("pageMaker", new PageDTO(cri, service.getTotal()));
+        model.addAttribute("pageMaker", new PageDTO(cri, service.getTotal(cri)));
         model.addAttribute("loginUser", getLoginUser());
+        // 지역 목록 필터용 데이터 추가
+        model.addAttribute("locations", service.getLocations());
     }
 
     @GetMapping("/register")
@@ -191,13 +193,68 @@ public class BoardController {
     }
 
     @PostMapping("/modify")
-    public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr) {
+    public String modify(BoardVO board, @RequestParam(value="uploadFile", required=false) MultipartFile[] uploadFile, Criteria cri, RedirectAttributes rttr) {
         log.info("modify:" + board);
         BoardVO originalBoard = service.get(board.getBno());
         if (!isLoginUserAdmin() && (getLoginUser() == null || !getLoginUser().getUserid().equals(originalBoard.getWriter()))) {
             rttr.addFlashAttribute("msg", "수정 권한이 없습니다.");
             return "redirect:/board/list";
         }
+        
+        // --- 첨부파일 처리 로직 추가 ---
+        if (uploadFile != null && uploadFile.length > 0) {
+            String uploadFolder = "C:\\upload";
+            String uploadFolderPath = getFolder();
+            File uploadPath = new File(uploadFolder, uploadFolderPath);
+            
+            if (!uploadPath.exists()) {
+                uploadPath.mkdirs();
+            }
+
+            // 기존 리스트가 없으면 초기화
+            if (board.getAttachList() == null) {
+                board.setAttachList(new ArrayList<>());
+            }
+
+            for (MultipartFile multipartFile : uploadFile) {
+                if (multipartFile.isEmpty()) {
+                    continue;
+                }
+                
+                String originalFileName = multipartFile.getOriginalFilename();
+                if (originalFileName == null || originalFileName.trim().isEmpty()) {
+                    continue;
+                }
+
+                AttachVO attachVO = new AttachVO();
+                UUID uuid = UUID.randomUUID();
+                String storedFileName = uuid.toString() + "_" + originalFileName;
+
+                try {
+                    File saveFile = new File(uploadPath, storedFileName);
+                    multipartFile.transferTo(saveFile);
+
+                    attachVO.setUuid(uuid.toString());
+                    attachVO.setFileName(originalFileName);
+                    attachVO.setUploadPath(uploadFolderPath);
+
+                    if (isImage(saveFile)) {
+                        attachVO.setFileType(true);
+                        FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + storedFileName));
+                        try (InputStream inputStream = multipartFile.getInputStream()) {
+                            Thumbnailator.createThumbnail(inputStream, thumbnail, 100, 100);
+                        }
+                        thumbnail.close();
+                    }
+                    // 리스트에 추가
+                    board.getAttachList().add(attachVO);
+
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        
         if (service.modify(board)) {
             rttr.addFlashAttribute("result", "success");
         }
@@ -207,7 +264,7 @@ public class BoardController {
     }
 
     @PostMapping("/remove")
-    public String remove(@RequestParam("bno") Long bno, Criteria cri, RedirectAttributes rttr) {
+    public String remove(@RequestParam("bno") Long bno, Criteria cri, @RequestParam(value = "from", required = false) String from, RedirectAttributes rttr) {
         log.info("remove..." + bno);
         
         BoardVO board = service.get(bno);
@@ -223,6 +280,11 @@ public class BoardController {
             // 첨부파일 삭제
             deleteFiles(attachList);
             rttr.addFlashAttribute("result", "success");
+        }
+        
+        // 관리자 페이지에서 삭제 요청이 온 경우
+        if ("admin".equals(from)) {
+            return "redirect:/admin/main?page=" + cri.getPage() + "&perPageNum=" + cri.getPerPageNum();
         }
         
         rttr.addAttribute("page", cri.getPage());

@@ -91,6 +91,7 @@
                             <a href="/board/modify?bno=${board.bno}" class="btn btn-modify">수정</a>
                             <form action="/board/remove" method="post" style="display:inline;" onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?');">
                             	<input type="hidden" name="bno" value="${board.bno}">
+                            	<input type="hidden" name="from" value="admin"> <!-- 추가된 파라미터 -->
                             	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                             	<button type="submit" class="btn btn-remove">삭제</button>
                             </form>

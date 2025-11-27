@@ -1,5 +1,7 @@
 package org.mnu.controller;
 
+import java.security.Principal;
+
 import org.mnu.domain.Criteria;
 import org.mnu.domain.PageDTO;
 import org.mnu.service.BoardService;
@@ -20,10 +22,14 @@ public class AdminController {
 	private BoardService boardService;
 	
 	@GetMapping("/main")
-	public void adminMain(Criteria cri, Model model) {
+	public void adminMain(Criteria cri, Model model, Principal principal) {
 		log.info("관리자 페이지 - 게시물 목록");
-		model.addAttribute("list", boardService.getList(cri));
-        model.addAttribute("pageMaker", new PageDTO(cri, boardService.getTotal()));
+		String writer = principal.getName(); // 로그인한 사용자 ID (예: admin)
+		log.info("접속한 관리자 ID: " + writer);
+		
+		// 본인이 작성한 글만 가져오도록 변경
+		model.addAttribute("list", boardService.getListByWriter(cri, writer));
+        model.addAttribute("pageMaker", new PageDTO(cri, boardService.getTotalByWriter(writer)));
 	}
 
 }

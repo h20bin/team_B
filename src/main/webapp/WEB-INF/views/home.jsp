@@ -121,7 +121,7 @@
 <body>
     <header>
         <div class="logo">
-            <i class="fa-solid fa-dumbbell"></i> 체육시설 조회
+            <i class="fa-solid fa-dumbbell"></i> 짐빌려
         </div>
     </header>
     

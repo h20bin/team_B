@@ -62,26 +62,4 @@ public class MemberController {
     public void loginInput(String error, String logout) {
         log.info("login page inputs: " + error + ", " + logout);
     }
-
-    @PostMapping("/member/login")
-    public String login(MemberVO member, HttpServletRequest request, RedirectAttributes rttr) {
-        log.info("login post: " + member);
-        MemberVO loginVo = service.login(member);
-
-        if (loginVo != null) {
-            HttpSession session = request.getSession();
-            session.setAttribute("loginUser", loginVo);
-            return "redirect:/";
-        } else {
-            rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 일치하지 않습니다.");
-            return "redirect:/member/login";
-        }
-    }
-
-    @GetMapping("/member/logout")
-    public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        session.invalidate();
-        return "redirect:/";
-    }
 }

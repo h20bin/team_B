@@ -49,8 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
             // 이미지 출력(/board/display), 목록(/board/list), 첫 페이지(/) 등은 로그인 없이 허용
             .antMatchers("/", "/board/list", "/board/display", "/board/getAttachList", "/board/get").permitAll()
-            // 그 외 페이지 권한 설정
-            .antMatchers("/board/register", "/board/modify", "/board/remove").authenticated() // 로그인 필요
+            // 그 외 페이지 권한 설정 (관리자만 작성/수정/삭제 가능)
+            .antMatchers("/board/register", "/board/modify", "/board/remove").hasAuthority("ROLE_ADMIN") 
             .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // 관리자만
             .antMatchers("/member/**").permitAll()
             .antMatchers("/upload/**").permitAll()
@@ -60,7 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .loginPage("/member/login")
             .loginProcessingUrl("/login")
             .usernameParameter("userid")
-            .defaultSuccessUrl("/board/list", true); // 로그인 성공 시 이동할 곳 명시
+            .defaultSuccessUrl("/board/list", true) // 로그인 성공 시 이동할 곳 명시
+            .failureUrl("/member/login?error"); // 로그인 실패 시 이동할 곳 명시
         
         http.logout()
             .logoutUrl("/member/logout")
