@@ -1,2 +1,4 @@
 eclipse.preferences.version=1
 encoding//src/main/webapp/WEB-INF/views/member/register.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/reservation/form.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/reservation/my.jsp=UTF-8

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.mnu.mapper.ReservationMapper">
+
+    <!-- 중복 예약 체크 -->
+    <select id="countOverlap"
+            parameterType="org.mnu.domain.ReservationVO"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM tbl_reservation
+        WHERE bno = #{bno}
+          AND res_date = #{resDate}
+          AND status = 'RESERVED'
+          AND (
+                (start_time &lt; #{endTime} AND end_time &gt; #{startTime})
+              )
+    </select>
+
+    <!-- 예약 등록 -->
+    <insert id="insert"
+            parameterType="org.mnu.domain.ReservationVO">
+        INSERT INTO tbl_reservation
+            (res_id, bno, userid, res_date, start_time, end_time, status)
+        VALUES
+            (seq_reservation.NEXTVAL,
+             #{bno},
+             #{userid},
+             #{resDate},
+             #{startTime},
+             #{endTime},
+             'RESERVED')
+    </insert>
+
+    <!-- 내 예약 목록 -->
+    <select id="getMyList"
+            parameterType="string"
+            resultType="org.mnu.domain.ReservationVO">
+        SELECT *
+        FROM tbl_reservation
+        WHERE userid = #{userid}
+        ORDER BY res_date DESC, start_time DESC
+    </select>
+
+</mapper>
