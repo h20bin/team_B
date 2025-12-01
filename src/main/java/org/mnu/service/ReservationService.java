@@ -118,8 +118,14 @@ public class ReservationService {
         return reservationMapper.getAll();
     }
 
-    /** 시설/용품별 예약 통계 (bno 기준) */
+    /** 시설/용품별 예약 통계 (bno 기준, 관리자용) */
     public List<Map<String, Object>> getStatsByBno() {
-        return reservationMapper.getStatsByBno();
+        // ReservationMapper.xml 에서 <select id="countByBno"> 로 구현한 쿼리 호출
+        return reservationMapper.countByBno();
+    }
+
+    /** 특정 bno 의 예약 목록 (관리자용) */
+    public List<ReservationVO> getListByBno(Long bno) {
+        return reservationMapper.getByBno(bno);
     }
 }

@@ -1,6 +1,7 @@
 package org.mnu.controller;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.mnu.domain.ReservationVO;
@@ -22,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final WaitingService waitingService;   // ★ 대기 관련 서비스 주입
+    private final WaitingService waitingService;   // 대기 서비스
 
     // ================== 예약 폼 ==================
     @GetMapping("/form")
@@ -49,20 +50,51 @@ public class ReservationController {
 
         boolean ok = reservationService.reserve(vo);
 
-        // ====== 겹치는 예약이 있을 때 : 대기예약으로 등록 ======
         if (!ok) {
-            // 대기 테이블에 한 줄 추가
-            waitingService.addWaiting(vo.getBno(), loginId, vo.getResDate());
+            // 이미 예약이 겹치는 경우 → 대기예약 유도
+            model.addAttribute("msg", "이미 해당 시간에 예약이 있습니다. 대기 예약 하시겠습니까?");
+            model.addAttribute("bno", vo.getBno());
+            model.addAttribute("overlap", true);           // JSP에서 '대기예약' 버튼 표시용
 
-            rttr.addFlashAttribute("msg",
-                    "이미 해당 시간에 예약이 있어, 대기 예약으로 등록되었습니다.");
-            // 내 대기예약 현황으로 이동
-            return "redirect:/reservation/wait";
+            // 입력값 다시 채워주기
+            model.addAttribute("prevStart", vo.getStartTime());
+            model.addAttribute("prevEnd", vo.getEndTime());
+            model.addAttribute("prevDate", vo.getResDate());
+
+            return "reservation/form";
         }
 
-        // ====== 정상 예약일 때 ======
         rttr.addFlashAttribute("msg", "예약이 완료되었습니다.");
         return "redirect:/reservation/my";
+    }
+
+    // ================== 대기 예약 등록 ==================
+    @PostMapping("/wait")
+    public String waitReserve(ReservationVO vo,
+                              Principal principal,
+                              RedirectAttributes rttr,
+                              Model model) {
+
+        if (principal == null) {
+            rttr.addFlashAttribute("msg", "로그인 후 대기 예약이 가능합니다.");
+            return "redirect:/member/login";
+        }
+
+        String loginId = principal.getName();
+        vo.setUserid(loginId);
+
+        // 날짜가 비었으면 다시 폼으로
+        if (vo.getResDate() == null) {
+            model.addAttribute("msg", "예약 날짜를 다시 선택해주세요.");
+            model.addAttribute("bno", vo.getBno());
+            return "reservation/form";
+        }
+
+        // 대기 등록
+        waitingService.addWaiting(vo.getBno(), loginId, vo.getResDate());
+
+        rttr.addFlashAttribute("msg", "대기 예약이 등록되었습니다.");
+        return "redirect:/reservation/wait";
     }
 
     // ================== 내 예약 목록 ==================
@@ -96,7 +128,7 @@ public class ReservationController {
         return "reservation/wait";   // /WEB-INF/views/reservation/wait.jsp
     }
 
-    // ================== 예약 취소 ==================
+    // ================== 예약 취소 (자동 승계 포함) ==================
     @PostMapping("/cancel")
     public String cancel(@RequestParam("resId") Long resId,
                          Principal principal,
@@ -108,7 +140,6 @@ public class ReservationController {
 
         String loginId = principal.getName();
 
-        // 자신의 예약이고, 상태가 RESERVED 인 건만 취소
         boolean ok = reservationService.cancel(resId, loginId);
 
         if (ok) {

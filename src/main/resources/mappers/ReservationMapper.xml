@@ -99,5 +99,27 @@
         GROUP BY bno
         ORDER BY bno
     </select>
-    
+        <!-- ===== 관리자용 통계 ===== -->
+
+    <!-- 시설/용품별 예약 수 집계 -->
+    <select id="countByBno" resultType="map">
+        SELECT
+            bno            AS bno,
+            COUNT(*)       AS totalCnt,
+            SUM(CASE WHEN status = 'RESERVED'  THEN 1 ELSE 0 END) AS reservedCnt,
+            SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelledCnt
+        FROM tbl_reservation
+        GROUP BY bno
+        ORDER BY bno
+    </select>
+
+    <!-- 특정 bno 의 예약 목록 -->
+    <select id="getByBno"
+            parameterType="long"
+            resultType="org.mnu.domain.ReservationVO">
+        SELECT *
+        FROM tbl_reservation
+        WHERE bno = #{bno}
+        ORDER BY res_date DESC, start_time DESC
+    </select>
 </mapper>
