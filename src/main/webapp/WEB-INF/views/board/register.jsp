@@ -55,11 +55,13 @@
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(34, 139, 230, 0.3); }
 
     </style>
+    <!-- Daum Postcode Service -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 
     <header>
-        <div class="logo"><i class="fa-solid fa-dumbbell"></i> 체육시설 조회</div>
+        <div class="logo"><i class="fa-solid fa-dumbbell"></i> 짐빌려</div>
     </header>
 
     <div class="main-container">
@@ -78,6 +80,19 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 카테고리 선택 추가 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fa-solid fa-filter"></i> 카테고리</label>
+                <div style="display:flex; gap:20px; align-items:center;">
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:16px;">
+                        <input type="radio" name="category" value="facility" style="width:18px; height:18px; accent-color:#339af0;"> 체육시설
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:16px;">
+                        <input type="radio" name="category" value="goods" style="width:18px; height:18px; accent-color:#339af0;"> 체육용품
+                    </label>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label class="form-label"><i class="fa-solid fa-tag"></i> 물품 이름</label>
@@ -91,7 +106,7 @@
 
             <div class="form-group">
                 <label class="form-label"><i class="fa-solid fa-map-location-dot"></i> 대여 장소</label>
-                <input type="text" id="location" class="form-input" placeholder="대여 가능한 장소를 입력해주세요">
+                <input type="text" id="location" class="form-input" placeholder="클릭하여 주소를 검색하세요" readonly onclick="execDaumPostcode()">
             </div>
 
             <div class="btn-area">
@@ -105,6 +120,26 @@
     </div>
 
  <script>
+        // Daum Postcode Function
+        function execDaumPostcode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+                    var addr = ''; // 주소 변수
+
+                    // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                    if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                        addr = data.roadAddress;
+                    } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                        addr = data.jibunAddress;
+                    }
+                    
+                    // 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById("location").value = addr;
+                }
+            }).open();
+        }
+ 
         // [핵심] 선택된 파일들을 관리할 배열
         let selectedFiles = [];
         const MAX_IMAGES = 4; // 최대 이미지 개수 제한
@@ -194,7 +229,14 @@
         document.getElementById('submitBtn').addEventListener('click', async function() {
             const title = document.getElementById("title");
             const content = document.getElementById("content");
+            
+            // 카테고리 선택 확인
+            const category = document.querySelector('input[name="category"]:checked');
 
+            if (!category) {
+                alert("카테고리를 선택해주세요.");
+                return;
+            }
             if (title.value.trim() === "") {
                 alert("물품 이름을 입력해주세요.");
                 title.focus();
@@ -210,6 +252,7 @@
             formData.append('title', title.value);
             formData.append('content', content.value);
             formData.append('location', document.getElementById('location').value);
+            formData.append('category', category.value); // 카테고리 값 추가
             
             const csrfToken = "${_csrf.token}";
             formData.append("${_csrf.parameterName}", csrfToken);

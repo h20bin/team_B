@@ -1,13 +1,17 @@
 package org.mnu.domain;   // 
 
 import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class ReservationVO {
 
     private Long resId;
     private Long bno;
     private String userid;
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date resDate;      // DATE 타입
+    
     private String startTime;  // '09:00' 이런 문자열
     private String endTime;
     private String status;

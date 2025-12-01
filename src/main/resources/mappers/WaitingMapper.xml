@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.mnu.mapper.WaitingMapper">
+
+    <!-- 1. 대기 신청 등록 -->
+    <insert id="insert"
+            parameterType="org.mnu.domain.WaitingVO">
+        INSERT INTO tbl_waiting
+            (wait_id, bno, userid, res_date, priority, status, regdate)
+        VALUES
+            (seq_waiting.NEXTVAL,
+             #{bno},
+             #{userid},
+             #{resDate},
+             #{priority},
+             #{status},
+             SYSDATE)
+    </insert>
+
+    <!-- 2. bno+날짜 기준 최대 priority -->
+    <select id="getMaxPriority"
+            parameterType="map"
+            resultType="int">
+        SELECT NVL(MAX(priority), 0)
+        FROM   tbl_waiting
+        WHERE  bno      = #{bno}
+        AND    res_date = #{resDate}
+    </select>
+
+    <!-- 3. 자동 승계용: 가장 먼저 신청한 대기 1명 -->
+    <select id="findNext"
+            parameterType="map"
+            resultType="org.mnu.domain.WaitingVO">
+        SELECT
+            wait_id   AS waitId,
+            bno,
+            userid,
+            res_date  AS resDate,
+            priority,
+            status,
+            regdate   AS regdate
+        FROM tbl_waiting
+        WHERE bno      = #{bno}
+          AND res_date = #{resDate}
+          AND status   = 'WAIT'
+        ORDER BY priority ASC
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 4. 상태 변경 -->
+    <update id="updateStatus">
+        UPDATE tbl_waiting
+        SET    status = #{status}
+        WHERE  wait_id = #{waitId}
+    </update>
+
+    <!-- 5. 내 대기 예약 목록 -->
+    <select id="getMyWaiting"
+            parameterType="string"
+            resultType="org.mnu.domain.WaitingVO">
+        SELECT
+            wait_id   AS waitId,
+            bno,
+            userid,
+            res_date  AS resDate,
+            priority,
+            status,
+            regdate   AS regdate
+        FROM tbl_waiting
+        WHERE userid = #{userid}
+        ORDER BY res_date DESC, priority ASC
+    </select>
+
+</mapper>

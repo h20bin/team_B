@@ -14,8 +14,8 @@
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
 		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
 		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@114.70.92.70:1521:XE"/>
-		<property name="username" value="book_203616"/>
-		<property name="password" value="book_203616"/>
+		<property name="username" value="book_233911"/>
+		<property name="password" value="book_233911"/>
 	</bean>
 
 	<!-- HikariCP configuration -->
@@ -30,7 +30,6 @@
 	  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 	    <property name="dataSource" ref="dataSource"/>
 	    <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
-	    <property name="typeAliasesPackage" value="org.mnu.domain"></property>
 	  </bean>	
 	<mybatis-spring:scan base-package="org.mnu.mapper"/>
 	

@@ -106,7 +106,7 @@
 
     <header>
         <div class="logo">
-            <a href="/"> <i class="fa-solid fa-dumbbell"></i> 체육시설 조회 </a>
+            <a href="/"> <i class="fa-solid fa-dumbbell"></i> 짐빌려 </a>
         </div>
     </header>
 

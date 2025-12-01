@@ -88,13 +88,30 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<BoardVO> getList(Criteria cri) {
         log.info("get List with criteria: " + cri);
-        return mapper.getListWithPaging(cri);
+        List<BoardVO> list = mapper.getListWithPaging(cri);
+        
+        // 각 게시글의 첨부파일 정보를 가져와 썸네일 필드 세팅 (N+1 문제 발생 가능하나 간단한 구현을 위해 채택)
+        list.forEach(board -> {
+            List<AttachVO> attachList = attachMapper.findByBno(board.getBno());
+            if (attachList != null && !attachList.isEmpty()) {
+                // 첫 번째 파일이 이미지라면 썸네일용으로 세팅, 아니면 그냥 정보만 세팅
+                AttachVO attach = attachList.stream().filter(AttachVO::isFileType).findFirst().orElse(attachList.get(0));
+                
+                board.setUuid(attach.getUuid());
+                // [중요] Windows 경로(\)를 웹 표준 경로(/)로 변환하여 저장
+                board.setUploadPath(attach.getUploadPath().replace("\\", "/"));
+                board.setFileName(attach.getFileName());
+                board.setFileType(attach.isFileType());
+            }
+        });
+        
+        return list;
     }
 
     @Override
-    public int getTotal() {
+    public int getTotal(Criteria cri) {
         log.info("get total count");
-        return mapper.getTotalCount();
+        return mapper.getTotalCount(cri);
     }
     
     @Override
@@ -102,4 +119,28 @@ public class BoardServiceImpl implements BoardService {
 		log.info("get Attach list by bno" + bno);
 		return attachMapper.findByBno(bno);
 	}
+
+    @Override
+    public void updateReviewStats(Long bno) {
+        log.info("Updating review stats for board: " + bno);
+        mapper.updateReviewStats(bno);
+    }
+
+    @Override
+    public List<BoardVO> getListByWriter(Criteria cri, String writer) {
+        log.info("get List by writer: " + writer);
+        return mapper.getListByWriter(cri, writer);
+    }
+
+    @Override
+    public int getTotalByWriter(String writer) {
+        log.info("get total count by writer: " + writer);
+        return mapper.getTotalCountByWriter(writer);
+    }
+
+    @Override
+    public List<String> getLocations() {
+        log.info("get locations");
+        return mapper.getLocations();
+    }
 }
