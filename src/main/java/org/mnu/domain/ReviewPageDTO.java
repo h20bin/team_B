@@ -4,14 +4,11 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 @Data
 @AllArgsConstructor
-@Getter
 public class ReviewPageDTO {
-	
-	private int reviewCnt;
-	private List<ReviewVO> list;
 
+    private int reviewCnt;           // 총 리뷰 개수
+    private List<ReviewVO> list;     // 현재 페이지 리뷰 목록
 }

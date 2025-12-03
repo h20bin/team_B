@@ -1,7 +1,8 @@
 package org.mnu.controller;
 
 import java.security.Principal;
-import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.mnu.domain.ReservationVO;
@@ -23,13 +24,13 @@ import lombok.RequiredArgsConstructor;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final WaitingService waitingService;   // 대기 서비스
+    private final WaitingService waitingService;
 
     // ================== 예약 폼 ==================
     @GetMapping("/form")
     public String form(@RequestParam("bno") Long bno, Model model) {
         model.addAttribute("bno", bno);
-        return "reservation/form";   // /WEB-INF/views/reservation/form.jsp
+        return "reservation/form";
     }
 
     // ================== 예약 처리 ==================
@@ -39,28 +40,61 @@ public class ReservationController {
                             RedirectAttributes rttr,
                             Model model) {
 
-        // 로그인 안 되어 있으면 로그인 페이지로
+        // 로그인 체크
         if (principal == null) {
             rttr.addFlashAttribute("msg", "로그인 후 예약이 가능합니다.");
             return "redirect:/member/login";
         }
 
-        String loginId = principal.getName(); // 아이디
+        String loginId = principal.getName();
         vo.setUserid(loginId);
 
-        boolean ok = reservationService.reserve(vo);
+        // ------------ 🔥 시간 포맷 통일 (팀원 문제 해결 핵심) ------------
+        // "9:00" → "09:00" 으로 보정
+        if (vo.getStartTime() != null && vo.getStartTime().length() == 4) {
+            vo.setStartTime("0" + vo.getStartTime());
+        }
+        if (vo.getEndTime() != null && vo.getEndTime().length() == 4) {
+            vo.setEndTime("0" + vo.getEndTime());
+        }
+        // -----------------------------------------------------------------
 
-        if (!ok) {
-            // 이미 예약이 겹치는 경우 → 대기예약 유도
-            model.addAttribute("msg", "이미 해당 시간에 예약이 있습니다. 대기 예약 하시겠습니까?");
+        // ---------- 1. 시작/종료 시간 유효성 검사 ----------
+        try {
+            LocalTime start = LocalTime.parse(vo.getStartTime()); 
+            LocalTime end   = LocalTime.parse(vo.getEndTime());   
+
+            if (!start.isBefore(end)) {
+                model.addAttribute("msg", "시작 시간은 종료 시간보다 빨라야 합니다.");
+                model.addAttribute("bno", vo.getBno());
+                model.addAttribute("overlap", false);
+                model.addAttribute("prevStart", vo.getStartTime());
+                model.addAttribute("prevEnd", vo.getEndTime());
+                model.addAttribute("prevDate", vo.getResDate());
+                return "reservation/form";
+            }
+
+        } catch (DateTimeParseException e) {
+            model.addAttribute("msg", "시간 형식이 올바르지 않습니다. (예: 09:00)");
             model.addAttribute("bno", vo.getBno());
-            model.addAttribute("overlap", true);           // JSP에서 '대기예약' 버튼 표시용
-
-            // 입력값 다시 채워주기
+            model.addAttribute("overlap", false);
             model.addAttribute("prevStart", vo.getStartTime());
             model.addAttribute("prevEnd", vo.getEndTime());
             model.addAttribute("prevDate", vo.getResDate());
+            return "reservation/form";
+        }
+        // ---------- 유효성 검사 끝 ----------
 
+        // ---------- 2. 예약 시도 (시간 겹침 방지) ----------
+        boolean ok = reservationService.reserve(vo);
+
+        if (!ok) {
+            model.addAttribute("msg", "이미 해당 시간에 예약이 있습니다. 대기 예약 하시겠습니까?");
+            model.addAttribute("bno", vo.getBno());
+            model.addAttribute("overlap", true);
+            model.addAttribute("prevStart", vo.getStartTime());
+            model.addAttribute("prevEnd", vo.getEndTime());
+            model.addAttribute("prevDate", vo.getResDate());
             return "reservation/form";
         }
 
@@ -68,7 +102,7 @@ public class ReservationController {
         return "redirect:/reservation/my";
     }
 
-    // ================== 대기 예약 등록 ==================
+    // ================== 대기 예약 ==================
     @PostMapping("/wait")
     public String waitReserve(ReservationVO vo,
                               Principal principal,
@@ -83,14 +117,12 @@ public class ReservationController {
         String loginId = principal.getName();
         vo.setUserid(loginId);
 
-        // 날짜가 비었으면 다시 폼으로
         if (vo.getResDate() == null) {
             model.addAttribute("msg", "예약 날짜를 다시 선택해주세요.");
             model.addAttribute("bno", vo.getBno());
             return "reservation/form";
         }
 
-        // 대기 등록
         waitingService.addWaiting(vo.getBno(), loginId, vo.getResDate());
 
         rttr.addFlashAttribute("msg", "대기 예약이 등록되었습니다.");
@@ -106,10 +138,11 @@ public class ReservationController {
         }
 
         String loginId = principal.getName();
-        List<ReservationVO> list = reservationService.getMyList(loginId);
 
+        List<ReservationVO> list = reservationService.getMyList(loginId);
         model.addAttribute("list", list);
-        return "reservation/my";     // /WEB-INF/views/reservation/my.jsp
+
+        return "reservation/my";
     }
 
     // ================== 내 대기 목록 ==================
@@ -121,14 +154,12 @@ public class ReservationController {
         }
 
         String loginId = principal.getName();
-
-        // 로그인한 회원의 대기 목록
         model.addAttribute("waitList", waitingService.getMyWaiting(loginId));
 
-        return "reservation/wait";   // /WEB-INF/views/reservation/wait.jsp
+        return "reservation/wait";
     }
 
-    // ================== 예약 취소 (자동 승계 포함) ==================
+    // ================== 예약 취소 (+ 자동 승계) ==================
     @PostMapping("/cancel")
     public String cancel(@RequestParam("resId") Long resId,
                          Principal principal,
@@ -145,7 +176,7 @@ public class ReservationController {
         if (ok) {
             rttr.addFlashAttribute("msg", "예약이 취소되었습니다.");
         } else {
-            rttr.addFlashAttribute("msg", "취소할 수 있는 예약이 아닙니다. (본인 예약인지 / 상태 확인)");
+            rttr.addFlashAttribute("msg", "취소할 수 없는 예약입니다.");
         }
 
         return "redirect:/reservation/my";

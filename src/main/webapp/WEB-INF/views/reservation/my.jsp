@@ -20,7 +20,7 @@
         }
         h1 { font-size:24px; font-weight:800; margin-bottom:8px; }
         .sub { font-size:13px; color:#868e96; margin-bottom:4px; }
-        .msg { font-size:13px; color:#fa5252; margin-bottom:20px; }
+        .msg { font-size:13px; color:#2b8a3e; margin-bottom:20px; }
 
         table { width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
         th, td { padding:10px; border-bottom:1px solid #f1f3f5; text-align:center; }
@@ -81,7 +81,7 @@
 <body>
 <div class="wrap">
     <h1>내 예약 현황</h1>
-    <p class="sub">예약이 완료되었거나, 취소된 내역을 확인할 수 있습니다.</p>
+    <p class="sub">예약이 완료되었거나 취소된 내역을 확인할 수 있습니다.</p>
 
     <c:if test="${not empty msg}">
         <p class="msg"><c:out value="${msg}"/></p>
@@ -110,8 +110,8 @@
                         <td>${r.resId}</td>
                         <td>${r.bno}</td>
                         <td><fmt:formatDate value="${r.resDate}" pattern="yyyy-MM-dd"/></td>
-						<td><c:out value="${r.startTime}"/></td>
-						<td><c:out value="${r.endTime}"/></td>
+                        <td><c:out value="${r.startTime}"/></td>
+                        <td><c:out value="${r.endTime}"/></td>
 
                         <td>
                             <c:choose>
@@ -128,7 +128,10 @@
                             <c:if test="${r.status eq 'RESERVED'}">
                                 <form action="${pageContext.request.contextPath}/reservation/cancel"
                                       method="post"
-                                      style="margin:0;">
+                                      style="margin:0;"
+                                      onsubmit="return confirm('해당 예약을 취소하시겠습니까?');">
+                                    <!-- CSRF 토큰 -->
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                                     <input type="hidden" name="resId" value="${r.resId}"/>
                                     <button type="submit" class="btn btn-cancel">취소</button>
                                 </form>

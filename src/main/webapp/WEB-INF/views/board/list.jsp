@@ -105,7 +105,7 @@
         .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .card-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #212529; }
         .card-info { font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 10px; }
-        .card-meta { font-size: 12px; color: #868e96; display: flex; gap: 5px; }
+        .card-meta { font-size: 12px; color: #868e96; display: flex; gap: 5px; align-items:center; }
 
         /* 페이지네이션 */
         .pagination { display: flex; justify-content: center; gap: 6px; }
@@ -127,6 +127,19 @@
         }
         .btn-write-float:hover { background-color: #228be6; transform: scale(1.05); }
 
+        /* 예약 가능 뱃지 */
+        .badge-available {
+            display:inline-flex;
+            align-items:center;
+            padding:2px 8px;
+            border-radius:999px;
+            background:#e7f5ff;
+            color:#1c7ed6;
+            font-size:11px;
+            font-weight:700;
+            margin-left:4px;
+        }
+
     </style>
 </head>
 <body>
@@ -136,22 +149,31 @@
             <a href="/" style="display: flex; align-items: center;"><i class="fa-solid fa-dumbbell"></i> 짐빌려</a>
         </div>
         <div style="position: absolute; right: 40px; font-size: 14px; display: flex; align-items: center; gap: 15px;">
-             <sec:authorize access="isAuthenticated()">
-                <span><sec:authentication property="principal.member.name"/>님</span>
-                
-                <sec:authorize access="hasRole('ROLE_ADMIN')">
-                    <a href="/admin/main" style="font-weight: 700; color: #339af0;">관리자 페이지</a>
-                </sec:authorize>
+    <sec:authorize access="isAuthenticated()">
+        <span><sec:authentication property="principal.member.name"/>님</span>
 
-                <form action="/member/logout" method="post" style="display:inline;">
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                    <button style="background:none; border:none; cursor:pointer; color:#868e96;">로그아웃</button>
-                </form>
-             </sec:authorize>
-             <sec:authorize access="isAnonymous()">
-                <a href="/member/login">로그인</a>
-             </sec:authorize>
-        </div>
+        <!-- 내 예약 바로가기 -->
+        <a href="/reservation/my" style="color:#495057;">내 예약</a>
+
+        <!-- 관리자 전용 메뉴들 -->
+        <sec:authorize access="hasRole('ROLE_ADMIN')">
+            <a href="/admin/reservation/status" style="font-weight:700; color:#339af0;">
+                예약 현황
+            </a>
+            <a href="/admin/main" style="color:#339af0;">관리자 메인</a>
+        </sec:authorize>
+
+        <form action="/member/logout" method="post" style="display:inline;">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <button style="background:none; border:none; cursor:pointer; color:#868e96;">로그아웃</button>
+        </form>
+    </sec:authorize>
+
+    <sec:authorize access="isAnonymous()">
+        <a href="/member/login">로그인</a>
+    </sec:authorize>
+</div>
+
     </header>
 
     <div class="layout-container">
@@ -266,6 +288,9 @@
                             <span><fmt:formatDate pattern="MM-dd" value="${board.regdate}"/></span>
                             <span>·</span>
                             <span>조회 <c:out value="${board.viewcnt}"/></span>
+
+                            <!-- 예약 가능 뱃지 -->
+                            <span class="badge-available">예약 가능</span>
                         </div>
                     </a>
                 </c:forEach>

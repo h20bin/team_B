@@ -57,7 +57,7 @@
         WHERE  wait_id = #{waitId}
     </update>
 
-    <!-- 5. 내 대기 예약 목록 -->
+    <!-- 5. 내 대기 예약 목록 (날짜 오름차순 + priority 오름차순) -->
     <select id="getMyWaiting"
             parameterType="string"
             resultType="org.mnu.domain.WaitingVO">
@@ -71,7 +71,7 @@
             regdate   AS regdate
         FROM tbl_waiting
         WHERE userid = #{userid}
-        ORDER BY res_date DESC, priority ASC
+        ORDER BY res_date ASC, priority ASC
     </select>
 
 </mapper>
