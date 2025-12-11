@@ -5,61 +5,51 @@
 
 <mapper namespace="org.mnu.mapper.ReservationMapper">
 
-    <!-- 1. 중복 예약 체크 -->
-    <select id="countOverlap"
-            parameterType="org.mnu.domain.ReservationVO"
-            resultType="int">
-        SELECT COUNT(*)
-        FROM tbl_reservation
-        WHERE bno      = #{bno}
-          AND res_date = #{resDate}
-          AND status IN ('RESERVED', 'USING')
-          AND (
-                #{startTime} &lt; end_time
-            AND #{endTime}   &gt; start_time
-          )
-    </select>
+   <!-- 1. 해당 시간에 이미 예약이 있는지 확인 -->
+	<select id="countOverlap"
+        parameterType="org.mnu.domain.ReservationVO"
+        resultType="int">
+    SELECT COUNT(*)
+    FROM tbl_reservation
+    WHERE bno      = #{bno}
+      AND res_date = #{resDate}
+      AND status   = 'RESERVED'
+      AND NOT (end_time   &lt;= #{startTime}
+               OR start_time &gt;= #{endTime})
+	</select>
 
     <!-- 2. 예약 등록 -->
     <insert id="insert"
             parameterType="org.mnu.domain.ReservationVO">
-        INSERT INTO tbl_reservation (
-            res_id,
-            bno,
-            userid,
-            res_date,
-            start_time,
-            end_time,
-            status,
-            regdate
-        ) VALUES (
-            seq_reservation.NEXTVAL,
-            #{bno},
-            #{userid},
-            #{resDate},
-            #{startTime},
-            #{endTime},
-            #{status},
-            SYSDATE
-        )
+        INSERT INTO tbl_reservation
+            (res_id, bno, userid, res_date, start_time, end_time, status, regdate)
+        VALUES
+            (seq_reservation.NEXTVAL,
+             #{bno},
+             #{userid},
+             #{resDate},
+             #{startTime},
+             #{endTime},
+             #{status},
+             SYSDATE)
     </insert>
 
-    <!-- 3. 내 예약 목록 (날짜, 시간 오름차순 정렬) -->
+    <!-- 3. 내 예약 목록 -->
     <select id="getMyList"
             parameterType="string"
             resultType="org.mnu.domain.ReservationVO">
         SELECT
             res_id     AS resId,
-            bno        AS bno,
-            userid     AS userid,
+            bno,
+            userid,
             res_date   AS resDate,
             start_time AS startTime,
             end_time   AS endTime,
-            status     AS status,
-            regdate    AS regdate
+            status,
+            regdate
         FROM tbl_reservation
         WHERE userid = #{userid}
-        ORDER BY res_date ASC, start_time ASC
+        ORDER BY res_date DESC, start_time ASC
     </select>
 
     <!-- 4. 예약 단건 조회 -->
@@ -68,70 +58,70 @@
             resultType="org.mnu.domain.ReservationVO">
         SELECT
             res_id     AS resId,
-            bno        AS bno,
-            userid     AS userid,
+            bno,
+            userid,
             res_date   AS resDate,
             start_time AS startTime,
             end_time   AS endTime,
-            status     AS status,
-            regdate    AS regdate
+            status,
+            regdate
         FROM tbl_reservation
         WHERE res_id = #{resId}
     </select>
 
-    <!-- 5. 예약 취소 (상태만 CANCELLED 로 변경) -->
+    <!-- 5. 예약 취소 (상태 변경) -->
     <update id="cancel">
         UPDATE tbl_reservation
-        SET status = 'CANCELLED'
-        WHERE res_id = #{resId}
-          AND userid = #{userid}
-          AND status = 'RESERVED'
+        SET    status = 'CANCELLED'
+        WHERE  res_id = #{resId}
+        AND    userid = #{userid}
     </update>
 
-    <!-- 6. 관리자용: 전체 예약 목록 -->
+    <!-- 6. (관리자) 전체 예약 목록 -->
     <select id="getAll"
             resultType="org.mnu.domain.ReservationVO">
         SELECT
             res_id     AS resId,
-            bno        AS bno,
-            userid     AS userid,
+            bno,
+            userid,
             res_date   AS resDate,
             start_time AS startTime,
             end_time   AS endTime,
-            status     AS status,
-            regdate    AS regdate
+            status,
+            regdate
         FROM tbl_reservation
-        ORDER BY res_date DESC, start_time DESC
+        ORDER BY res_date DESC, start_time ASC
     </select>
 
-    <!-- 7. 관리자용: 시설/용품별 예약 수 집계 -->
-    <select id="countByBno" resultType="map">
+    <!-- ✅ 7. 시설/용품별 예약 통계 (관리자 화면 상단) -->
+    <select id="getStatsByBno"
+            resultType="map">
         SELECT
             bno,
-            COUNT(*) AS totalCnt,
-            SUM(CASE WHEN status = 'RESERVED'  THEN 1 ELSE 0 END) AS reservedCnt,
-            SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelledCnt
+            COUNT(*)                                                   AS totalCnt,
+            SUM(CASE WHEN status = 'RESERVED'  THEN 1 ELSE 0 END)     AS reservedCnt,
+            SUM(CASE WHEN status = 'CANCELLED' THEN 1 ELSE 0 END)     AS cancelledCnt
         FROM tbl_reservation
         GROUP BY bno
         ORDER BY bno
     </select>
 
-    <!-- 8. 관리자용: 특정 bno 의 예약 목록 -->
+    <!-- 8. 특정 시설/용품(bno)의 예약 목록 (관리자 화면 하단 테이블) -->
     <select id="getByBno"
             parameterType="long"
             resultType="org.mnu.domain.ReservationVO">
         SELECT
             res_id     AS resId,
-            bno        AS bno,
-            userid     AS userid,
+            bno,
+            userid,
             res_date   AS resDate,
             start_time AS startTime,
             end_time   AS endTime,
-            status     AS status,
-            regdate    AS regdate
+            status,
+            regdate
         FROM tbl_reservation
         WHERE bno = #{bno}
-        ORDER BY res_date DESC, start_time DESC
+        ORDER BY res_date ASC, start_time ASC
     </select>
 
 </mapper>

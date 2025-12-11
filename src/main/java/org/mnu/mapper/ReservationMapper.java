@@ -28,7 +28,7 @@ public interface ReservationMapper {
     List<ReservationVO> getAll();
 
     // 시설/용품별 예약 수 집계 (관리자 통계)
-    List<Map<String, Object>> countByBno();
+    List<Map<String, Object>>  getStatsByBno();
 
     // 특정 시설/용품(bno)의 예약 목록
     List<ReservationVO> getByBno(@Param("bno") Long bno);

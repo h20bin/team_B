@@ -9,43 +9,127 @@
 <title>시설/용품 예약 현황</title>
 
 <style>
-    body { background:#f8f9fa; font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
+    body { 
+        background:#f8f9fa; 
+        font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; 
+    }
 
     .wrap {
-        max-width:1100px; margin:40px auto;
-        background:#fff; padding:30px 40px;
-        border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.05);
+        max-width:1100px; 
+        margin:40px auto;
+        background:#fff; 
+        padding:30px 40px;
+        border-radius:16px; 
+        box-shadow:0 4px 16px rgba(0,0,0,0.05);
     }
 
-    h1 { font-size:24px; font-weight:800; margin-bottom:20px; }
-    h2 { font-size:18px; font-weight:700; margin-top:30px; margin-bottom:10px; }
+    h1 { 
+        font-size:24px; 
+        font-weight:800; 
+        margin:0;
+    }
+    h2 { 
+        font-size:18px; 
+        font-weight:700; 
+        margin-top:30px; 
+        margin-bottom:10px; 
+    }
 
-    table { width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
-    th,td { padding:8px 10px; border-bottom:1px solid #f1f3f5; text-align:center; }
-    th { background:#f8f9fa; font-weight:700; }
+    table { 
+        width:100%; 
+        border-collapse:collapse; 
+        font-size:14px; 
+        margin-top:10px; 
+    }
+    th,td { 
+        padding:8px 10px; 
+        border-bottom:1px solid #f1f3f5; 
+        text-align:center; 
+    }
+    th { 
+        background:#f8f9fa; 
+        font-weight:700; 
+    }
 
-    tr:hover { background:#f8f9fa; }
+    tr:hover { 
+        background:#f8f9fa; 
+    }
 
-    .btn-link { border:none; background:none; color:#339af0; cursor:pointer; font-size:13px; }
+    .btn-link { 
+        border:none; 
+        background:none; 
+        color:#339af0; 
+        cursor:pointer; 
+        font-size:13px; 
+    }
 
-    .badge { display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; }
-    .badge-blue { background:#e7f5ff; color:#1c7ed6; }
-    .badge-red { background:#ffe3e3; color:#f03e3e; }
+    .badge { 
+        display:inline-block; 
+        padding:3px 8px; 
+        border-radius:999px; 
+        font-size:12px; 
+    }
+    .badge-blue { 
+        background:#e7f5ff; 
+        color:#1c7ed6; 
+    }
+    .badge-red { 
+        background:#ffe3e3; 
+        color:#f03e3e; 
+    }
 
     .top-btn {
-        margin-top:20px;
-        color:#495057; background:#e9ecef;
-        padding:6px 14px; border-radius:8px;
-        cursor:pointer; border:none; font-size:13px;
+        margin-top:0;
+        color:#495057; 
+        background:#e9ecef;
+        padding:6px 14px; 
+        border-radius:8px;
+        cursor:pointer; 
+        border:none; 
+        font-size:13px;
+        margin-left:6px;
     }
-    .top-btn:hover { background:#dee2e6; }
+    .top-btn:hover { 
+        background:#dee2e6; 
+    }
+
+    .scroll-top-btn {
+        margin-top:20px;
+        color:#495057; 
+        background:#e9ecef;
+        padding:6px 14px; 
+        border-radius:8px;
+        cursor:pointer; 
+        border:none; 
+        font-size:13px;
+    }
+    .scroll-top-btn:hover { 
+        background:#dee2e6; 
+    }
 </style>
 
 </head>
 <body>
 <div class="wrap">
 
-    <h1>시설/용품 예약 현황</h1>
+    <!-- 상단 제목 + 네비게이션 버튼들 -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1>시설/용품 예약 현황</h1>
+
+        <div>
+            <!-- 관리자 메인으로 -->
+            <button class="top-btn"
+                    onclick="location.href='${pageContext.request.contextPath}/admin/main'">
+                관리자 메인으로
+            </button>
+
+            <!-- 체육시설 목록(게시판)으로 -->
+            <button class="top-btn"
+                    onclick="location.href='${pageContext.request.contextPath}/board/list'">
+                체육시설 목록으로
+            </button>
+        </div>
+    </div>
 
     <!-- =========================
          1. BNO별 통계
@@ -66,15 +150,16 @@
         <tbody>
         <c:forEach items="${stats}" var="s">
             <tr>
-                <td>${s.bno}</td>
-                <td>${s.totalCnt}</td>
-                <td><span class="badge badge-blue">${s.reservedCnt}</span></td>
-                <td><span class="badge badge-red">${s.cancelledCnt}</span></td>
+                <!-- ✅ Map 키는 대문자 -->
+                <td>${s.BNO}</td>
+                <td>${s.TOTALCNT}</td>
+                <td><span class="badge badge-blue">${s.RESERVEDCNT}</span></td>
+                <td><span class="badge badge-red">${s.CANCELLEDCNT}</span></td>
 
                 <td>
                     <form method="get"
                           action="${pageContext.request.contextPath}/admin/reservation/status">
-                        <input type="hidden" name="bno" value="${s.bno}">
+                        <input type="hidden" name="bno" value="${s.BNO}">
                         <button type="submit" class="btn-link">예약자 목록</button>
                     </form>
                 </td>
@@ -127,7 +212,8 @@
             </tbody>
         </table>
 
-        <button class="top-btn"
+        <!-- 맨 위로 스크롤 버튼 -->
+        <button class="scroll-top-btn"
                 onclick="window.scrollTo({top:0, behavior:'smooth'});">
             ▲ 맨 위로
         </button>
